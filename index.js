@@ -55,6 +55,33 @@ app.get('/api/projects', (req, res) => {
   });
 });
 
+// ==========================================
+// TAHAP 8: ENDPOINT GET PROJECT BY ID
+// URL: http://localhost:3000/api/projects/:id
+// ==========================================
+app.get('/api/projects/:id', (req, res) => {
+  // 1. Mengambil ID dari parameter URL dan diubah ke tipe angka (number)
+  const projectId = parseInt(req.params.id);
+
+  // 2. Mencari proyek dalam array berdasarkan ID
+  const project = projects.find(p => p.id === projectId);
+
+  // 3. Jika proyek TIDAK ditemukan, kirim respon Error 404
+  if (!project) {
+    return res.status(404).json({
+      success: false,
+      message: `Proyek dengan ID ${projectId} tidak ditemukan, Bos!`
+    });
+  }
+
+  // 4. Jika proyek ditemukan, kirim respon Sukses 200 beserta datanya
+  res.status(200).json({
+    success: true,
+    message: 'Berhasil mengambil detail proyek',
+    data: project
+  });
+});
+
 // 6. Jalankan Server
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:3000`);
