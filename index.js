@@ -1,31 +1,61 @@
-// Baris 1: Kita panggil library 'express' yang sudah kita download kemarin di PowerShell.
-// Ibaratnya, kita pinjam mesin utama untuk membuat server.
-const express = require("express");
+// 1. Mengimpor pustaka express
+const express = require('express');
 
-// Baris 2: Kita hidupkan mesin express-nya dan disimpan dalam variabel bernama 'app'.
-// Mulai sekarang, variabel 'app' inilah yang memegang kendali server kita.
+// 2. Inisialisasi aplikasi express
 const app = express();
 
-// Baris 3: Kita tentukan "nomor pintu rumah" (PORT) di komputer kita.
-// Kita pakai angka 3000. Jadi nanti server kita bisa diakses di alamat localhost:3000.
+// 3. Menentukan nomor PORT
 const PORT = 3000;
 
-// Baris 4: Ini namanya Middleware. Fungsinya seperti satpam pembaca surat.
-// Kode ini memberi tahu server agar bisa membaca data yang dikirim dengan format JSON.
+// 4. Middleware bawaan agar server paham data berformat JSON
 app.use(express.json());
 
-// Baris 5: Kita buat rute/jalur (Route) paling dasar.
-// Jika ada orang yang mengakses URL utama server kita ('/'),
-// server akan langsung membalas dengan format JSON di bawah ini.
-app.get("/", (req, res) => {
+// ==========================================
+// TAHAP 6: DATA DUMMY (Database Sementara)
+// Kita pakai 'let' karena daftar proyek ini akan bertambah/berkurang
+// ==========================================
+let projects = [
+  {
+    id: 1,
+    title: "Showroom App",
+    description: "Aplikasi showroom mobil berbasis React Native",
+    category: "Mobile",
+    status: "Dalam Pengerjaan",
+    deadline: "2026-08-15"
+  },
+  {
+    id: 2,
+    title: "Website Portofolio Astro",
+    description: "Website portofolio pribadi menggunakan Astro dan Tailwind",
+    category: "Web",
+    status: "Mangkrak",
+    deadline: "2026-09-01"
+  }
+];
+
+// 5. Route Utama (Pengecekan Server)
+app.get('/', (req, res) => {
   res.json({
-    message: "API Anti-Mangkrak Siap Digunakan, Bos!",
-    status: "Success",
+    message: 'API Anti-Mangkrak Siap Digunakan, Bos!',
+    status: 'Success'
   });
 });
 
-// Baris 6: Kita perintahkan server untuk mulai standby dan mendengarkan (listen)
-// di PORT 3000. Begitu server menyala, dia akan memunculkan teks di terminal.
+// ==========================================
+// TAHAP 7: ENDPOINT GET ALL PROJECTS
+// URL: http://localhost:3000/api/projects
+// ==========================================
+app.get('/api/projects', (req, res) => {
+  // res.status(200) artinya memberi respon status 'OK'
+  res.status(200).json({
+    success: true,
+    message: 'Berhasil mengambil daftar proyek',
+    total: projects.length, // Menghitung otomatis berapa jumlah proyek di array
+    data: projects          // Mengirimkan isi array proyek kita
+  });
+});
+
+// 6. Jalankan Server
 app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`);
+  console.log(`Server berjalan di http://localhost:3000`);
 });
