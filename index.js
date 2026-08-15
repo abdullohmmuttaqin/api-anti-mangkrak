@@ -82,6 +82,43 @@ app.get('/api/projects/:id', (req, res) => {
   });
 });
 
+// ==========================================
+// TAHAP 9: ENDPOINT POST CREATE PROJECT
+// URL: http://localhost:3000/api/projects
+// ==========================================
+app.post('/api/projects', (req, res) => {
+  // 1. Mengambil data yang dikirim oleh client melalui req.body
+  const { title, description, category, status, deadline } = req.body;
+
+  // 2. Validasi sederhana: pastikan title dan category tidak kosong
+  if (!title || !category) {
+    return res.status(400).json({
+      success: false,
+      message: 'Judul (title) dan Kategori (category) wajib diisi, Bos!'
+    });
+  }
+
+  // 3. Membuat objek proyek baru dengan ID yang otomatis bertambah (auto-increment)
+  const newProject = {
+    id: projects.length > 0 ? projects[projects.length - 1].id + 1 : 1,
+    title,
+    description: description || '',
+    category,
+    status: status || 'Mangkrak', // Default status jika tidak diisi
+    deadline: deadline || ''
+  };
+
+  // 4. Memasukkan proyek baru ke dalam array projects
+  projects.push(newProject);
+
+  // 5. Kirim respon Sukses HTTP 201 (Created) beserta data proyek baru
+  res.status(201).json({
+    success: true,
+    message: 'Proyek baru berhasil ditambahkan agar tidak mangkrak!',
+    data: newProject
+  });
+});
+
 // 6. Jalankan Server
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:3000`);

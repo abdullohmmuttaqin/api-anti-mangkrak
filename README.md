@@ -14,7 +14,7 @@ Sistem Backend API berbasis **Node.js** dan **Express.js** yang dirancang khusus
 - [x] **Tahap 6:** Pembuatan Basis Data Sementara (Array Data Dummy)
 - [x] **Tahap 7:** Implementasi Endpoint `GET /api/projects` (Read All)
 - [x] **Tahap 8:** Implementasi Endpoint `GET /api/projects/:id` (Read Detail)
-- [ ] **Tahap 9:** Implementasi Endpoint `POST /api/projects` (Create)
+- [x] **Tahap 9:** Implementasi Endpoint `POST /api/projects` (Create)
 - [ ] **Tahap 10:** Implementasi Endpoint `PUT /api/projects/:id` (Update)
 - [ ] **Tahap 11:** Implementasi Endpoint `DELETE /api/projects/:id` (Delete)
 
@@ -36,7 +36,7 @@ Sistem Backend API berbasis **Node.js** dan **Express.js** yang dirancang khusus
 | **GET**     | `/`                 | Cek Status Server Utama       | ✅ Aktif   |
 | **GET**     | `/api/projects`     | Mengambil Semua Daftar Proyek | ✅ Rencana |
 | **GET**     | `/api/projects/:id` | Mengambil Detail 1 Proyek     | ✅ Rencana |
-| **POST**    | `/api/projects`     | Menambah Proyek Baru          | ⏳ Rencana |
+| **POST**    | `/api/projects`     | Menambah Proyek Baru          | ✅ Rencana |
 | **PUT**     | `/api/projects/:id` | Mengubah Status/Data Proyek   | ⏳ Rencana |
 | **DELETE**  | `/api/projects/:id` | Menghapus Proyek dari List    | ⏳ Rencana |
 
