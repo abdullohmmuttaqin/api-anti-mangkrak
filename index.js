@@ -159,6 +159,39 @@ app.put('/api/projects/:id', (req, res) => {
   });
 });
 
+// ==========================================
+// TAHAP 11: ENDPOINT DELETE PROJECT
+// URL: http://localhost:3000/api/projects/:id
+// ==========================================
+app.delete('/api/projects/:id', (req, res) => {
+  // 1. Ambil ID dari parameter URL dan konversi ke angka
+  const projectId = parseInt(req.params.id);
+
+  // 2. Cari indeks posisi proyek di dalam array
+  const projectIndex = projects.findIndex(p => p.id === projectId);
+
+  // 3. Jika proyek tidak ditemukan, kirim respon Error 404
+  if (projectIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: `Gagal menghapus! Proyek dengan ID ${projectId} tidak ditemukan, Bos!`
+    });
+  }
+
+  // 4. Simpan data proyek yang akan dihapus untuk respon
+  const deletedProject = projects[projectIndex];
+
+  // 5. Hapus 1 elemen dari array berdasarkan indeksnya menggunakan splice()
+  projects.splice(projectIndex, 1);
+
+  // 6. Kirim respon Sukses 200 beserta informasi proyek yang berhasil dihapus
+  res.status(200).json({
+    success: true,
+    message: `Proyek '${deletedProject.title}' (ID: ${projectId}) berhasil dihapus dari daftar!`,
+    data: deletedProject
+  });
+});
+
 // 6. Jalankan Server
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:3000`);
