@@ -119,6 +119,46 @@ app.post('/api/projects', (req, res) => {
   });
 });
 
+// ==========================================
+// TAHAP 10: ENDPOINT PUT UPDATE PROJECT
+// URL: http://localhost:3000/api/projects/:id
+// ==========================================
+app.put('/api/projects/:id', (req, res) => {
+  // 1. Ambil ID dari parameter URL dan konversi ke angka
+  const projectId = parseInt(req.params.id);
+
+  // 2. Cari indeks posisi proyek di dalam array
+  const projectIndex = projects.findIndex(p => p.id === projectId);
+
+  // 3. Jika proyek tidak ditemukan, kirim respon Error 404
+  if (projectIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: `Gagal update! Proyek dengan ID ${projectId} tidak ditemukan, Bos!`
+    });
+  }
+
+  // 4. Ambil data perbaruan dari req.body
+  const { title, description, category, status, deadline } = req.body;
+
+  // 5. Perbarui data proyek (gunakan nilai lama jika field tertentu tidak diisi/diubah)
+  projects[projectIndex] = {
+    ...projects[projectIndex], // Mempertahankan data lama
+    title: title || projects[projectIndex].title,
+    description: description !== undefined ? description : projects[projectIndex].description,
+    category: category || projects[projectIndex].category,
+    status: status || projects[projectIndex].status,
+    deadline: deadline !== undefined ? deadline : projects[projectIndex].deadline
+  };
+
+  // 6. Kirim respon Sukses 200 beserta data proyek yang sudah diperbarui
+  res.status(200).json({
+    success: true,
+    message: `Proyek dengan ID ${projectId} berhasil diperbarui!`,
+    data: projects[projectIndex]
+  });
+});
+
 // 6. Jalankan Server
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:3000`);
