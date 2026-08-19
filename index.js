@@ -1,6 +1,12 @@
+require('dotenv').config();
 const express = require('express');
+const connectDB = require('./src/config/db');
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+// Hubungkan Server ke MongoDB Cloud
+connectDB();
 
 // Middleware JSON Parser
 app.use(express.json());
@@ -16,10 +22,10 @@ app.get('/', (req, res) => {
   });
 });
 
-// Gunakan Router Proyek untuk Prefix /api/projects
+// Gunakan Router Proyek
 app.use('/api/projects', projectRoutes);
 
 // Jalankan Server
 app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:3000`);
+  console.log(`Server berjalan di http://localhost:${PORT}`);
 });

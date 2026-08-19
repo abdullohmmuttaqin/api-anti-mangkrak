@@ -1,129 +1,136 @@
-// Database Sementara (Data Dummy)
-let projects = [
-  {
-    id: 1,
-    title: "Showroom App",
-    description: "Aplikasi showroom mobil berbasis React Native",
-    category: "Mobile",
-    status: "Dalam Pengerjaan",
-    deadline: "2026-08-15"
-  },
-  {
-    id: 2,
-    title: "Website Portofolio Astro",
-    description: "Website portofolio pribadi menggunakan Astro dan Tailwind",
-    category: "Web",
-    status: "Mangkrak",
-    deadline: "2026-09-01"
-  }
-];
+const Project = require('../models/Project');
 
-// 1. GET ALL PROJECTS
-exports.getAllProjects = (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Berhasil mengambil daftar proyek',
-    total: projects.length,
-    data: projects
-  });
+// 1. GET ALL PROJECTS (Ambil Semua Data dari MongoDB)
+exports.getAllProjects = async (req, res) => {
+  try {
+    const projects = await Project.find().sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      message: 'Berhasil mengambil daftar proyek dari MongoDB Cloud',
+      total: projects.length,
+      data: projects
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Gagal mengambil data proyek!',
+      error: error.message
+    });
+  }
 };
 
 // 2. GET PROJECT BY ID
-exports.getProjectById = (req, res) => {
-  const projectId = parseInt(req.params.id);
-  const project = projects.find(p => p.id === projectId);
+exports.getProjectById = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
 
-  if (!project) {
-    return res.status(404).json({
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: `Proyek dengan ID ${req.params.id} tidak ditemukan, Bos!`
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Berhasil mengambil detail proyek',
+      data: project
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
-      message: `Proyek dengan ID ${projectId} tidak ditemukan, Bos!`
+      message: 'Format ID tidak valid atau proyek tidak ditemukan!',
+      error: error.message
     });
   }
-
-  res.status(200).json({
-    success: true,
-    message: 'Berhasil mengambil detail proyek',
-    data: project
-  });
 };
 
 // 3. CREATE PROJECT (POST)
-exports.createProject = (req, res) => {
-  const { title, description, category, status, deadline } = req.body;
+exports.createProject = async (req, res) => {
+  try {
+    const { title, description, category, status, deadline } = req.body;
 
-  if (!title || !category) {
-    return res.status(400).json({
+    if (!title || !category) {
+      return res.status(400).json({
+        success: false,
+        message: 'Judul (title) dan Kategori (category) wajib diisi, Bos!'
+      });
+    }
+
+    const newProject = await Project.create({
+      title,
+      description,
+      category,
+      status,
+      deadline
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Proyek baru berhasil disimpan permanen ke MongoDB Cloud!',
+      data: newProject
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
-      message: 'Judul (title) dan Kategori (category) wajib diisi, Bos!'
+      message: 'Gagal menambahkan proyek baru!',
+      error: error.message
     });
   }
-
-  const newProject = {
-    id: projects.length > 0 ? projects[projects.length - 1].id + 1 : 1,
-    title,
-    description: description || '',
-    category,
-    status: status || 'Mangkrak',
-    deadline: deadline || ''
-  };
-
-  projects.push(newProject);
-
-  res.status(201).json({
-    success: true,
-    message: 'Proyek baru berhasil ditambahkan agar tidak mangkrak!',
-    data: newProject
-  });
 };
 
 // 4. UPDATE PROJECT (PUT)
-exports.updateProject = (req, res) => {
-  const projectId = parseInt(req.params.id);
-  const projectIndex = projects.findIndex(p => p.id === projectId);
+exports.updateProject = async (req, res) => {
+  try {
+    const updatedProject = await Project.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
 
-  if (projectIndex === -1) {
-    return res.status(404).json({
+    if (!updatedProject) {
+      return res.status(404).json({
+        success: false,
+        message: `Gagal update! Proyek dengan ID ${req.params.id} tidak ditemukan, Bos!`
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Proyek berhasil diperbarui di MongoDB Cloud!',
+      data: updatedProject
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
-      message: `Gagal update! Proyek dengan ID ${projectId} tidak ditemukan, Bos!`
+      message: 'Gagal memperbarui proyek!',
+      error: error.message
     });
   }
-
-  const { title, description, category, status, deadline } = req.body;
-
-  projects[projectIndex] = {
-    ...projects[projectIndex],
-    title: title || projects[projectIndex].title,
-    description: description !== undefined ? description : projects[projectIndex].description,
-    category: category || projects[projectIndex].category,
-    status: status || projects[projectIndex].status,
-    deadline: deadline !== undefined ? deadline : projects[projectIndex].deadline
-  };
-
-  res.status(200).json({
-    success: true,
-    message: `Proyek dengan ID ${projectId} berhasil diperbarui!`,
-    data: projects[projectIndex]
-  });
 };
 
 // 5. DELETE PROJECT
-exports.deleteProject = (req, res) => {
-  const projectId = parseInt(req.params.id);
-  const projectIndex = projects.findIndex(p => p.id === projectId);
+exports.deleteProject = async (req, res) => {
+  try {
+    const deletedProject = await Project.findByIdAndDelete(req.params.id);
 
-  if (projectIndex === -1) {
-    return res.status(404).json({
+    if (!deletedProject) {
+      return res.status(404).json({
+        success: false,
+        message: `Gagal menghapus! Proyek dengan ID ${req.params.id} tidak ditemukan, Bos!`
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Proyek '${deletedProject.title}' berhasil dihapus dari MongoDB Cloud!`,
+      data: deletedProject
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
-      message: `Gagal menghapus! Proyek dengan ID ${projectId} tidak ditemukan, Bos!`
+      message: 'Gagal menghapus proyek!',
+      error: error.message
     });
   }
-
-  const deletedProject = projects[projectIndex];
-  projects.splice(projectIndex, 1);
-
-  res.status(200).json({
-    success: true,
-    message: `Proyek '${deletedProject.title}' (ID: ${projectId}) berhasil dihapus dari daftar!`,
-    data: deletedProject
-  });
 };
