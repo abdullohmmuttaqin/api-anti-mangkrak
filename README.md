@@ -20,6 +20,25 @@ Sistem Backend API berbasis **Node.js** dan **Express.js** yang dirancang khusus
 
 ---
 
+---
+
+## 🏗️ Struktur Arsitektur Folder (MVC Pattern)
+
+```text
+api-anti-mangkrak/
+├── assets/
+│   └── flowchart-backend-api.png
+├── src/
+│   ├── controllers/
+│   │   └── projectController.js   # Menampung logika bisnis & data CRUD
+│   └── routes/
+│       └── projectRoutes.js      # Pemetaan jalur endpoint URL
+├── .gitignore
+├── index.js                      # Entry point server utama
+├── package.json
+└── README.md
+```
+
 ## 🛠️ Stack Teknologi yang Digunakan
 
 - **Runtime Environment:** Node.js
@@ -39,8 +58,6 @@ Sistem Backend API berbasis **Node.js** dan **Express.js** yang dirancang khusus
 | **POST**    | `/api/projects`     | Menambah Proyek Baru          | ✅ Rencana |
 | **PUT**     | `/api/projects/:id` | Mengubah Status/Data Proyek   | ✅ Rencana |
 | **DELETE**  | `/api/projects/:id` | Menghapus Proyek dari List    | ✅ Rencana |
-
----
 
 ---
 
