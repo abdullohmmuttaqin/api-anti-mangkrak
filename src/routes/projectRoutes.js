@@ -2,17 +2,15 @@ const express = require('express');
 const router = express.Router();
 const projectController = require('../controllers/projectController');
 const { projectValidation } = require('../middleware/validator');
+const { verifyToken } = require('../middleware/auth'); // Import satpam JWT
 
-// GET /api/projects/stats (HARUS DI ATAS /:id)
 router.get('/stats', projectController.getProjectStats);
-
-// Jalur GET dan DELETE
 router.get('/', projectController.getAllProjects);
 router.get('/:id', projectController.getProjectById);
-router.delete('/:id', projectController.deleteProject);
 
-// Jalur POST dan PUT dengan Satpam Joi
-router.post('/', projectValidation, projectController.createProject);
-router.put('/:id', projectValidation, projectController.updateProject);
+// PASANG GEMBOK VERIFYTOKEN DI SINI
+router.delete('/:id', verifyToken, projectController.deleteProject);
+router.post('/', verifyToken, projectValidation, projectController.createProject);
+router.put('/:id', verifyToken, projectValidation, projectController.updateProject);
 
 module.exports = router;

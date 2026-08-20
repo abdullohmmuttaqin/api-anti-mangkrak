@@ -21,6 +21,9 @@ app.get('/', (req, res) => {
 
 app.use('/api/projects', projectRoutes);
 
+const authController = require('./src/controllers/authController');
+app.post('/api/auth/login', authController.login);
+
 // Global Error Handler (Harus paling bawah setelah routes)
 app.use(errorHandler);
 
