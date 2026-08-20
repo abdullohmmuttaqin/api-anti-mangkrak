@@ -3,12 +3,15 @@ const router = express.Router();
 const projectController = require('../controllers/projectController');
 const { projectValidation } = require('../middleware/validator');
 
-// Jalur GET dan DELETE biarkan bebas masuk (tanpa validasi body)
+// GET /api/projects/stats (HARUS DI ATAS /:id)
+router.get('/stats', projectController.getProjectStats);
+
+// Jalur GET dan DELETE
 router.get('/', projectController.getAllProjects);
 router.get('/:id', projectController.getProjectById);
 router.delete('/:id', projectController.deleteProject);
 
-// Pasang satpam projectValidation di POST dan PUT!
+// Jalur POST dan PUT dengan Satpam Joi
 router.post('/', projectValidation, projectController.createProject);
 router.put('/:id', projectValidation, projectController.updateProject);
 
