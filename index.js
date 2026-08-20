@@ -1,31 +1,29 @@
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./src/config/db');
+const errorHandler = require('./src/middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Hubungkan Server ke MongoDB Cloud
+// Connect Database
 connectDB();
 
-// Middleware JSON Parser
+// Middleware Body Parser
 app.use(express.json());
 
-// Import Routes
+// Routes
 const projectRoutes = require('./src/routes/projectRoutes');
 
-// Route Utama (Health Check)
 app.get('/', (req, res) => {
-  res.json({
-    message: 'API Anti-Mangkrak Siap Digunakan, Bos!',
-    status: 'Success'
-  });
+  res.json({ message: 'API Anti-Mangkrak Siap Digunakan, Bos!', status: 'Success' });
 });
 
-// Gunakan Router Proyek
 app.use('/api/projects', projectRoutes);
 
-// Jalankan Server
+// Global Error Handler (Harus paling bawah setelah routes)
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

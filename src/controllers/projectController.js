@@ -59,7 +59,7 @@ exports.getAllProjects = async (req, res) => {
 };
 
 // 2. GET PROJECT BY ID
-exports.getProjectById = async (req, res) => {
+exports.getProjectById = async (req, res, next) => {
   try {
     const project = await Project.findById(req.params.id);
 
@@ -76,11 +76,7 @@ exports.getProjectById = async (req, res) => {
       data: project
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: 'Format ID tidak valid atau proyek tidak ditemukan!',
-      error: error.message
-    });
+    next(error);
   }
 };
 
