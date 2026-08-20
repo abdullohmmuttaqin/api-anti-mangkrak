@@ -1,13 +1,52 @@
 const Project = require('../models/Project');
 
-// 1. GET ALL PROJECTS (Ambil Semua Data dari MongoDB)
+// 1. GET ALL PROJECTS (Search, Filter, & Pagination)
 exports.getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find().sort({ createdAt: -1 });
+    const { search, category, status, page = 1, limit = 10 } = req.query;
+
+    // Buat Objek Query Dinamis
+    let query = {};
+
+    // Fitur Search (Berdasarkan Title, Case-Insensitive)
+    if (search) {
+      query.title = { $regex: search, $options: 'i' };
+    }
+
+    // Fitur Filter Category
+    if (category) {
+      query.category = category;
+    }
+
+    // Fitur Filter Status
+    if (status) {
+      query.status = status;
+    }
+
+    // Konversi Page & Limit ke Angka
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Eksekusi Query ke MongoDB
+    const projects = await Project.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    // Hitung Total Data Sesuai Query
+    const totalItems = await Project.countDocuments(query);
+    const totalPages = Math.ceil(totalItems / limitNum);
+
     res.status(200).json({
       success: true,
       message: 'Berhasil mengambil daftar proyek dari MongoDB Cloud',
-      total: projects.length,
+      pagination: {
+        currentPage: pageNum,
+        totalPages: totalPages,
+        totalItems: totalItems,
+        limitPerPage: limitNum
+      },
       data: projects
     });
   } catch (error) {
