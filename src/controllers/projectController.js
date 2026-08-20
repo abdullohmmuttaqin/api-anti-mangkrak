@@ -58,6 +58,48 @@ exports.getAllProjects = async (req, res) => {
   }
 };
 
+// GET PROJECT STATISTICS
+exports.getProjectStats = async (req, res, next) => {
+  try {
+    // Menghitung total keseluruhan proyek
+    const totalProjects = await Project.countDocuments();
+
+    // Menggunakan Aggregation untuk mengelompokkan dan menghitung berdasarkan status
+    const stats = await Project.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Merapikan bentuk data agar mudah dibaca Frontend
+    const statusCount = {
+      'Mangkrak': 0,
+      'Dalam Pengerjaan': 0,
+      'Selesai': 0
+    };
+
+    stats.forEach(item => {
+      if (statusCount[item._id] !== undefined) {
+        statusCount[item._id] = item.count;
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Berhasil mengambil statistik proyek, Bos!',
+      data: {
+        total: totalProjects,
+        details: statusCount
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // 2. GET PROJECT BY ID
 exports.getProjectById = async (req, res, next) => {
   try {
